@@ -10,9 +10,11 @@ const ControlPresupuesto = ({gastos, presupuesto}) => {
 
     // Usamos en useEffect para ver los cambios en gastos
     useEffect(() => {
-      //console.log('compomente listo')
         const totalGastado = gastos.reduce( (total, gasto) => gasto.cantidad + total, 0 )
-        console.log(totalGastado)
+        const totalDisponible = presupuesto - totalGastado;
+        //console.log(totalDisponible)
+        //console.log(totalGastado)
+        setDisponible(totalDisponible)
         setGastado(totalGastado)
     }, [gastos])
     

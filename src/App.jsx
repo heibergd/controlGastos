@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 // Importacion de Componentes
 import Header from './components/Header'
@@ -26,11 +26,28 @@ function App() {
   // Definimos un state para la animacion de la ventana modal
   const [animarModal, setAnimarModal] = useState(false)
 
+  // Definimos un state para la edicion de los gasto
+  const [gastoEditar, setGastoEditar] = useState({})
+
+  // Utilizamos el useEffect para registrar los cambios en gastoEditar
+  useEffect(()=>{
+    if(Object.keys(gastoEditar).length >0){
+      setModal(true)
+      //Definimos el tiempo para la animacion del modal
+      setTimeout(() => {
+        //console.log('animando....')
+        setAnimarModal(true)
+      }, 500);
+        // console.log('Gasto Editar tiene contenido')
+      }
+  }, [gastoEditar])
+
 
   // Definimos la funcion para agregar un nuevo gasto
   const handleNuevoGasto= ()=>{
     //console.log('click para agregar nuevo gasto')
     setModal(true)
+    setGastoEditar({})
 
     //Definimos el tiempo para la animacion del modal
     setTimeout(() => {
@@ -42,15 +59,30 @@ function App() {
   // Funcion para guardar los datos del formulario de gastos
   const guardarGasto = gasto =>{
     // console.log(gasto)
-    gasto.id = generarId()
-    gasto.fecha = Date.now()
-    setGastos([...gastos, gasto])
+    if(gasto.id){
+      // Editar
+      const gastoActualizado = gastos.map( gastoState => gastoState.id === gasto.id ? gasto : gastoState)
+      setGastos(gastoActualizado)
+    }else{
+      //Nuevo Gasto
+      gasto.id = generarId()
+      gasto.fecha = Date.now()
+      setGastos([...gastos, gasto])
 
+    }
+   
     // Para cerrar el modal
     setModal(false)
     setTimeout(() => {
       setModal(false)
     }, 500);
+  }
+
+  // Eliminar gatos, trabajamos con el id del gasto
+  const eliminarGasto = id =>{
+    //console.log('Eliminando ', id)
+    const gastoActualizado = gastos.filter(gasto => gasto.id !== id)
+    setGastos(gastoActualizado)
   }
 
   
@@ -69,6 +101,8 @@ function App() {
           <main>
             <ListadoGastos
               gastos={gastos}
+              setGastoEditar={setGastoEditar}
+              eliminarGasto={eliminarGasto}
             />
           </main>
           <div className='nuevo-gasto'>
@@ -86,6 +120,7 @@ function App() {
                   animarModal={animarModal}
                   setAnimarModal={setAnimarModal}
                   guardarGasto={guardarGasto}
+                  gastoEditar={gastoEditar}
                 />}
       
     </div>
